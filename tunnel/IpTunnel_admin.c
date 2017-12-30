@@ -114,8 +114,8 @@ static void allowConnection(Dict* args,
                                             (ip4Address) ? &ip4ToGive.addr : NULL,
                                             (ip4Prefix) ? (uint8_t) (*ip4Prefix) : 32,
                                             (ip4Alloc) ? (uint8_t) (*ip4Alloc) : 32,
-                                            (routedip6Alloc) ? (uint8_t) : NULL,
-                                            (routedip6Address) ? (uint8_t) : NULL,
+                                            (routedip6Alloc) ? (uint8_t) (*routedip6Alloc) : NULL,
+                                            (routedip6Address) ? (uint8_t) (*routedip6Address) : NULL,
                                             context->ipTun);
         sendResponse(conn, txid, context->admin);
         return;
