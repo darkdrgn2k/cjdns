@@ -680,10 +680,11 @@ static bool isValidAddress6(uint8_t sourceAndDestIp6[32],
     uint8_t* compareAddr = (isFromTun)
         ? ((conn->isOutgoing) ? sourceAndDestIp6 : &sourceAndDestIp6[16])
         : ((conn->isOutgoing) ? &sourceAndDestIp6[16] : sourceAndDestIp6);
-    
     ret = prefixMatches6(compareAddr, conn->connectionIp6, conn->connectionIp6Alloc);
     if (!ret && conn->routedIp6)
-        ret =  prefixMatches6(compareAddr, conn->routedIp6, conn->routedIp6Alloc);    
+    {
+        ret =  prefixMatches6(compareAddr, conn->routedIp6, conn->routedIp6Alloc);
+    }
     return ret;
 }
 
