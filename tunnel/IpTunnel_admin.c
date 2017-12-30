@@ -69,6 +69,7 @@ static void allowConnection(Dict* args,
     uint8_t ip6Addr[16];
 
     struct Sockaddr_storage ip6ToGive;
+    struct Sockaddr_storage ip6ToRoute;
     struct Sockaddr_storage ip4ToGive;
 
     char* error;
@@ -101,6 +102,12 @@ static void allowConnection(Dict* args,
             || Sockaddr_getFamily(&ip6ToGive.addr) != Sockaddr_AF_INET6))
     {
         error = "malformed ip6Address";
+    } else if (routedip6Address
+        && (Sockaddr_parse(routedip6Address->bytes, &ip6ToRoute)
+            || Sockaddr_getFamily(&ip6ToRoute.addr) != Sockaddr_AF_INET6))
+    {
+        error = "malformed routedip6Address";
+    }
     } else if (ip4Address
         && (Sockaddr_parse(ip4Address->bytes, &ip4ToGive)
             || Sockaddr_getFamily(&ip4ToGive.addr) != Sockaddr_AF_INET))
@@ -114,8 +121,8 @@ static void allowConnection(Dict* args,
                                             (ip4Address) ? &ip4ToGive.addr : NULL,
                                             (ip4Prefix) ? (uint8_t) (*ip4Prefix) : 32,
                                             (ip4Alloc) ? (uint8_t) (*ip4Alloc) : 32,
+                                            (routedip6Address) ?  &ip6ToRoute.addr : NULL,
                                             (routedip6Alloc) ? (uint8_t) (*routedip6Alloc) : NULL,
-                                            (routedip6Address) ? (uint8_t) (*routedip6Address) : NULL,
                                             context->ipTun);
         sendResponse(conn, txid, context->admin);
         return;
