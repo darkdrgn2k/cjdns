@@ -161,16 +161,23 @@ int IpTunnel_allowConnection(uint8_t publicKeyOfAuthorizedNode[32],
                              struct Sockaddr* ip4Addr,
                              uint8_t ip4Prefix,
                              uint8_t ip4Alloc,
+                             struct Sockaddr* routedip6Addr,
+                             uint8_t ip4Alloc,
                              struct IpTunnel* tunnel)
 {
+
     struct IpTunnel_pvt* context = Identity_check((struct IpTunnel_pvt*)tunnel);
 
     Log_debug(context->logger, "IPv4 Prefix to allow: %d", ip4Prefix);
 
     uint8_t* ip6Address = NULL;
+    uint8_t* routedip6Address = NULL;
     uint8_t* ip4Address = NULL;
     if (ip6Addr) {
         Sockaddr_getAddress(ip6Addr, &ip6Address);
+    }
+    if (routedip6Addr) {
+        Sockaddr_getAddress(routedip6Addr, &routedip6Address);
     }
     if (ip4Addr) {
         Sockaddr_getAddress(ip4Addr, &ip4Address);
@@ -191,6 +198,10 @@ int IpTunnel_allowConnection(uint8_t publicKeyOfAuthorizedNode[32],
         conn->connectionIp6Prefix = ip6Prefix;
         conn->connectionIp6Alloc = ip6Alloc;
         Assert_true(ip6Alloc);
+    }
+    if (routedip6Address) {
+        Bits_memcpy(conn->routedIp6, routedip6Address, 16);
+        conn->routedIp6Alloc = routedIp6Alloc;
     }
 
     return conn->number;

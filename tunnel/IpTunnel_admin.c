@@ -248,7 +248,6 @@ void IpTunnel_admin_register(struct IpTunnel* ipTun, struct Admin* admin, struct
             { .name = "ip4Alloc", .required = 0, .type = "Int" },
             { .name = "routedip6Address", .required = 0, .type = "String" },
             { .name = "routedip6Alloc", .required = 0, .type = "Int" },
-
         }), admin);
 
     Admin_registerFunction("IpTunnel_connectTo", connectTo, context, true,
