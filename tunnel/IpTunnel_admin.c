@@ -62,6 +62,8 @@ static void allowConnection(Dict* args,
     String* ip4Address = Dict_getStringC(args, "ip4Address");
     int64_t* ip4Prefix = Dict_getIntC(args, "ip4Prefix");
     int64_t* ip4Alloc = Dict_getIntC(args, "ip4Alloc");
+    String* ip6Address = Dict_getStringC(args, "routedip6Address");
+    int64_t* ip6Alloc = Dict_getIntC(args, "routedip6Alloc");
 
     uint8_t pubKey[32];
     uint8_t ip6Addr[16];
@@ -112,6 +114,8 @@ static void allowConnection(Dict* args,
                                             (ip4Address) ? &ip4ToGive.addr : NULL,
                                             (ip4Prefix) ? (uint8_t) (*ip4Prefix) : 32,
                                             (ip4Alloc) ? (uint8_t) (*ip4Alloc) : 32,
+                                            (routedip6Alloc) ? (uint8_t) : NULL,
+                                            (routedip6Address) ? (uint8_t) : NULL,
                                             context->ipTun);
         sendResponse(conn, txid, context->admin);
         return;
@@ -237,6 +241,9 @@ void IpTunnel_admin_register(struct IpTunnel* ipTun, struct Admin* admin, struct
             { .name = "ip4Address", .required = 0, .type = "String" },
             { .name = "ip4Prefix", .required = 0, .type = "Int" },
             { .name = "ip4Alloc", .required = 0, .type = "Int" },
+            { .name = "routedip6Address", .required = 0, .type = "String" },
+            { .name = "routedip6Alloc", .required = 0, .type = "Int" },
+
         }), admin);
 
     Admin_registerFunction("IpTunnel_connectTo", connectTo, context, true,
