@@ -291,7 +291,7 @@ int IpTunnel_connectTo(uint8_t publicKeyOfNodeToConnectTo[32], struct IpTunnel* 
 {
     struct IpTunnel_pvt* context = Identity_check((struct IpTunnel_pvt*)tunnel);
     struct IpTunnel_Connection* conn = newConnection(true, context);
-    
+
     uint8_t* routedip6Address = NULL;
 
     if (routedip6Addr) {
