@@ -120,7 +120,7 @@ static void allowConnection(Dict* args,
                                             (ip4Prefix) ? (uint8_t) (*ip4Prefix) : 32,
                                             (ip4Alloc) ? (uint8_t) (*ip4Alloc) : 32,
                                             (routedip6Address) ?  &ip6ToRoute.addr : NULL,
-                                            (routedip6Alloc) ? (uint8_t) (*routedip6Alloc) : NULL,
+                                            (routedip6Alloc) ? (uint8_t) (*routedip6Alloc) : 128,
                                             context->ipTun);
         sendResponse(conn, txid, context->admin);
         return;
