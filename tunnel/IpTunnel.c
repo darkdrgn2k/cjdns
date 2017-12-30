@@ -285,7 +285,7 @@ static void requestAddresses(struct IpTunnel_Connection* conn, struct IpTunnel_p
  * @param tunnel the IpTunnel.
  * @return an connection number which is usable with IpTunnel_remove().
  */
-int IpTunnel_connectTo(uint8_t publicKeyOfNodeToConnectTo[32], struct IpTunnel* tunnel
+int IpTunnel_connectTo(uint8_t publicKeyOfNodeToConnectTo[32], struct IpTunnel* tunnel,
                              struct Sockaddr* routedip6Addr,
                              uint8_t routedip4Alloc)
 {
