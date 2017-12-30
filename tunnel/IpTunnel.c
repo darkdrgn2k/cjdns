@@ -162,7 +162,7 @@ int IpTunnel_allowConnection(uint8_t publicKeyOfAuthorizedNode[32],
                              uint8_t ip4Prefix,
                              uint8_t ip4Alloc,
                              struct Sockaddr* routedip6Addr,
-                             uint8_t ip4Alloc,
+                             uint8_t routedip4Alloc,
                              struct IpTunnel* tunnel)
 {
 
@@ -201,7 +201,7 @@ int IpTunnel_allowConnection(uint8_t publicKeyOfAuthorizedNode[32],
     }
     if (routedip6Address) {
         Bits_memcpy(conn->routedIp6, routedip6Address, 16);
-        conn->routedIp6Alloc = routedIp6Alloc;
+        conn->routedIp6Alloc = routedip4Alloc;
     }
 
     return conn->number;
