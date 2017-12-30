@@ -96,7 +96,6 @@ static void allowConnection(Dict* args,
         error = "ip4Prefix out of range: must be 0 to 32";
     } else if (ip4Alloc && (*ip4Alloc > 32 || *ip4Alloc < 1)) {
         error = "ip4Alloc out of range: must be 1 to 32";
-
     } else if (ip6Address
         && (Sockaddr_parse(ip6Address->bytes, &ip6ToGive)
             || Sockaddr_getFamily(&ip6ToGive.addr) != Sockaddr_AF_INET6))
@@ -107,7 +106,6 @@ static void allowConnection(Dict* args,
             || Sockaddr_getFamily(&ip6ToRoute.addr) != Sockaddr_AF_INET6))
     {
         error = "malformed routedip6Address";
-    }
     } else if (ip4Address
         && (Sockaddr_parse(ip4Address->bytes, &ip4ToGive)
             || Sockaddr_getFamily(&ip4ToGive.addr) != Sockaddr_AF_INET))
