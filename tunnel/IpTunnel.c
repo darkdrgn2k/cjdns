@@ -285,9 +285,22 @@ static void requestAddresses(struct IpTunnel_Connection* conn, struct IpTunnel_p
  * @param tunnel the IpTunnel.
  * @return an connection number which is usable with IpTunnel_remove().
  */
-int IpTunnel_connectTo(uint8_t publicKeyOfNodeToConnectTo[32], struct IpTunnel* tunnel)
+int IpTunnel_connectTo(uint8_t publicKeyOfNodeToConnectTo[32], struct IpTunnel* tunnel
+                             struct Sockaddr* routedip6Addr,
+                             uint8_t routedip4Alloc)
 {
     struct IpTunnel_pvt* context = Identity_check((struct IpTunnel_pvt*)tunnel);
+
+    uint8_t* routedip6Address = NULL;
+
+    if (routedip6Addr) {
+        Sockaddr_getAddress(routedip6Addr, &routedip6Address);
+    }
+
+    if (routedip6Address) {
+        Bits_memcpy(conn->routedIp6, routedip6Address, 16);
+        conn->routedIp6Alloc = routedip4Alloc;
+    }
 
     struct IpTunnel_Connection* conn = newConnection(true, context);
     Bits_memcpy(conn->routeHeader.publicKey, publicKeyOfNodeToConnectTo, 32);
