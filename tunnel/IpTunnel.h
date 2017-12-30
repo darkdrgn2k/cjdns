@@ -44,10 +44,10 @@ struct IpTunnel_Connection
     uint8_t connectionIp6Alloc;
 
     /** The IPv6 routed netmask/prefix length, in bits. Defaults to 128 if none was assigned. */
-    uint8_t routedIp6Prefix;
+    uint8_t routedIp6Alloc;
 
     /** The IPv6 prefix length in, in bits, defining netmask. 0xff if not used. */
-    uint8_t routedIp6Alloc;
+    uint8_t connectionIp6Prefix;
 
     /** The IPv4 address prefix length, in bits. Defaults to 32 if none was assigned. */
     uint8_t connectionIp4Prefix;
