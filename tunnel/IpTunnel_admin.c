@@ -62,8 +62,8 @@ static void allowConnection(Dict* args,
     String* ip4Address = Dict_getStringC(args, "ip4Address");
     int64_t* ip4Prefix = Dict_getIntC(args, "ip4Prefix");
     int64_t* ip4Alloc = Dict_getIntC(args, "ip4Alloc");
-    String* ip6Address = Dict_getStringC(args, "routedip6Address");
-    int64_t* ip6Alloc = Dict_getIntC(args, "routedip6Alloc");
+    String* routedip6Address = Dict_getStringC(args, "routedip6Address");
+    int64_t* routedip6Alloc = Dict_getIntC(args, "routedip6Alloc");
 
     uint8_t pubKey[32];
     uint8_t ip6Addr[16];
