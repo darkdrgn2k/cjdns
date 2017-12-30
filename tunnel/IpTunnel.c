@@ -290,7 +290,8 @@ int IpTunnel_connectTo(uint8_t publicKeyOfNodeToConnectTo[32], struct IpTunnel* 
                              uint8_t routedip4Alloc)
 {
     struct IpTunnel_pvt* context = Identity_check((struct IpTunnel_pvt*)tunnel);
-
+    struct IpTunnel_Connection* conn = newConnection(true, context);
+    
     uint8_t* routedip6Address = NULL;
 
     if (routedip6Addr) {
@@ -302,7 +303,6 @@ int IpTunnel_connectTo(uint8_t publicKeyOfNodeToConnectTo[32], struct IpTunnel* 
         conn->routedIp6Alloc = routedip4Alloc;
     }
 
-    struct IpTunnel_Connection* conn = newConnection(true, context);
     Bits_memcpy(conn->routeHeader.publicKey, publicKeyOfNodeToConnectTo, 32);
     AddressCalc_addressForPublicKey(conn->routeHeader.ip6, publicKeyOfNodeToConnectTo);
 
