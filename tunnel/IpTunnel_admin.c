@@ -148,7 +148,8 @@ static void connectTo(Dict* args, void* vcontext, String* txid, struct Allocator
         && (Sockaddr_parse(routedip6Address->bytes, &ip6ToRoute)
             || Sockaddr_getFamily(&ip6ToRoute.addr) != Sockaddr_AF_INET6))
     {
-        error = "malformed routedip6Address";
+        sendError("malformed routedip6Address", txid, context->admin);
+        return;
     }
 
     if ((ret = Key_parse(publicKeyOfNodeToConnectTo, pubKey, ip6)) != 0) {
