@@ -136,7 +136,7 @@ static void connectTo(Dict* args, void* vcontext, String* txid, struct Allocator
     String* publicKeyOfNodeToConnectTo =
         Dict_getStringC(args, "publicKeyOfNodeToConnectTo");
         String* routedip6Address = Dict_getStringC(args, "routedip6Address");
-         int64_t* routedip6Alloc = Dict_getIntC(args, "routedip6Alloc");
+        int64_t* routedip6Alloc = Dict_getIntC(args, "routedip6Alloc");
 
     struct Sockaddr_storage ip6ToRoute;
 
