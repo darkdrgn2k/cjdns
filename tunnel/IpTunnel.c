@@ -165,7 +165,6 @@ int IpTunnel_allowConnection(uint8_t publicKeyOfAuthorizedNode[32],
                              uint8_t routedip4Alloc,
                              struct IpTunnel* tunnel)
 {
-
     struct IpTunnel_pvt* context = Identity_check((struct IpTunnel_pvt*)tunnel);
 
     Log_debug(context->logger, "IPv4 Prefix to allow: %d", ip4Prefix);
@@ -285,9 +284,10 @@ static void requestAddresses(struct IpTunnel_Connection* conn, struct IpTunnel_p
  * @param tunnel the IpTunnel.
  * @return an connection number which is usable with IpTunnel_remove().
  */
-int IpTunnel_connectTo(uint8_t publicKeyOfNodeToConnectTo[32], struct IpTunnel* tunnel,
-                             struct Sockaddr* routedip6Addr,
-                             uint8_t routedip4Alloc)
+int IpTunnel_connectTo(uint8_t publicKeyOfNodeToConnectTo[32], 
+                       struct IpTunnel* tunnel,
+                       struct Sockaddr* routedip6Addr,
+                       uint8_t routedip4Alloc)
 {
     struct IpTunnel_pvt* context = Identity_check((struct IpTunnel_pvt*)tunnel);
     struct IpTunnel_Connection* conn = newConnection(true, context);
