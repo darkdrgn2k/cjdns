@@ -161,6 +161,8 @@ int IpTunnel_allowConnection(uint8_t publicKeyOfAuthorizedNode[32],
                              struct Sockaddr* ip4Addr,
                              uint8_t ip4Prefix,
                              uint8_t ip4Alloc,
+                             struct Sockaddr* routedip6Addr,
+                             uint8_t routedip4Alloc,
                              struct IpTunnel* tunnel)
 {
     struct IpTunnel_pvt* context = Identity_check((struct IpTunnel_pvt*)tunnel);
@@ -168,9 +170,13 @@ int IpTunnel_allowConnection(uint8_t publicKeyOfAuthorizedNode[32],
     Log_debug(context->logger, "IPv4 Prefix to allow: %d", ip4Prefix);
 
     uint8_t* ip6Address = NULL;
+    uint8_t* routedip6Address = NULL;
     uint8_t* ip4Address = NULL;
     if (ip6Addr) {
         Sockaddr_getAddress(ip6Addr, &ip6Address);
+    }
+    if (routedip6Addr) {
+        Sockaddr_getAddress(routedip6Addr, &routedip6Address);
     }
     if (ip4Addr) {
         Sockaddr_getAddress(ip4Addr, &ip4Address);
@@ -191,6 +197,10 @@ int IpTunnel_allowConnection(uint8_t publicKeyOfAuthorizedNode[32],
         conn->connectionIp6Prefix = ip6Prefix;
         conn->connectionIp6Alloc = ip6Alloc;
         Assert_true(ip6Alloc);
+    }
+    if (routedip6Address) {
+        Bits_memcpy(conn->routedIp6, routedip6Address, 16);
+        conn->routedIp6Alloc = routedip4Alloc;
     }
 
     return conn->number;
@@ -274,11 +284,25 @@ static void requestAddresses(struct IpTunnel_Connection* conn, struct IpTunnel_p
  * @param tunnel the IpTunnel.
  * @return an connection number which is usable with IpTunnel_remove().
  */
-int IpTunnel_connectTo(uint8_t publicKeyOfNodeToConnectTo[32], struct IpTunnel* tunnel)
+int IpTunnel_connectTo(uint8_t publicKeyOfNodeToConnectTo[32], 
+                       struct IpTunnel* tunnel,
+                       struct Sockaddr* routedip6Addr,
+                       uint8_t routedip4Alloc)
 {
     struct IpTunnel_pvt* context = Identity_check((struct IpTunnel_pvt*)tunnel);
-
     struct IpTunnel_Connection* conn = newConnection(true, context);
+
+    uint8_t* routedip6Address = NULL;
+
+    if (routedip6Addr) {
+        Sockaddr_getAddress(routedip6Addr, &routedip6Address);
+    }
+
+    if (routedip6Address) {
+        Bits_memcpy(conn->routedIp6, routedip6Address, 16);
+        conn->routedIp6Alloc = routedip4Alloc;
+    }
+
     Bits_memcpy(conn->routeHeader.publicKey, publicKeyOfNodeToConnectTo, 32);
     AddressCalc_addressForPublicKey(conn->routeHeader.ip6, publicKeyOfNodeToConnectTo);
 
@@ -661,6 +685,7 @@ static bool isValidAddress6(uint8_t sourceAndDestIp6[32],
                             bool isFromTun,
                             struct IpTunnel_Connection* conn)
 {
+    bool ret=false;
     if (AddressCalc_validAddress(sourceAndDestIp6)
         || AddressCalc_validAddress(&sourceAndDestIp6[16])) {
         return false;
@@ -668,7 +693,12 @@ static bool isValidAddress6(uint8_t sourceAndDestIp6[32],
     uint8_t* compareAddr = (isFromTun)
         ? ((conn->isOutgoing) ? sourceAndDestIp6 : &sourceAndDestIp6[16])
         : ((conn->isOutgoing) ? &sourceAndDestIp6[16] : sourceAndDestIp6);
-    return prefixMatches6(compareAddr, conn->connectionIp6, conn->connectionIp6Alloc);
+    ret = prefixMatches6(compareAddr, conn->connectionIp6, conn->connectionIp6Alloc);
+    if (!ret && conn->routedIp6)
+    {
+        ret =  prefixMatches6(compareAddr, conn->routedIp6, conn->routedIp6Alloc);
+    }
+    return ret;
 }
 
 static struct IpTunnel_Connection* findConnection(uint8_t sourceAndDestIp6[32],

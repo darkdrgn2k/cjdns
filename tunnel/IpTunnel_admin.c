@@ -62,11 +62,14 @@ static void allowConnection(Dict* args,
     String* ip4Address = Dict_getStringC(args, "ip4Address");
     int64_t* ip4Prefix = Dict_getIntC(args, "ip4Prefix");
     int64_t* ip4Alloc = Dict_getIntC(args, "ip4Alloc");
+    String* routedip6Address = Dict_getStringC(args, "routedip6Address");
+    int64_t* routedip6Alloc = Dict_getIntC(args, "routedip6Alloc");
 
     uint8_t pubKey[32];
     uint8_t ip6Addr[16];
 
     struct Sockaddr_storage ip6ToGive;
+    struct Sockaddr_storage ip6ToRoute;
     struct Sockaddr_storage ip4ToGive;
 
     char* error;
@@ -93,12 +96,16 @@ static void allowConnection(Dict* args,
         error = "ip4Prefix out of range: must be 0 to 32";
     } else if (ip4Alloc && (*ip4Alloc > 32 || *ip4Alloc < 1)) {
         error = "ip4Alloc out of range: must be 1 to 32";
-
     } else if (ip6Address
         && (Sockaddr_parse(ip6Address->bytes, &ip6ToGive)
             || Sockaddr_getFamily(&ip6ToGive.addr) != Sockaddr_AF_INET6))
     {
         error = "malformed ip6Address";
+    } else if (routedip6Address
+        && (Sockaddr_parse(routedip6Address->bytes, &ip6ToRoute)
+            || Sockaddr_getFamily(&ip6ToRoute.addr) != Sockaddr_AF_INET6))
+    {
+        error = "malformed routedip6Address";
     } else if (ip4Address
         && (Sockaddr_parse(ip4Address->bytes, &ip4ToGive)
             || Sockaddr_getFamily(&ip4ToGive.addr) != Sockaddr_AF_INET))
@@ -112,6 +119,8 @@ static void allowConnection(Dict* args,
                                             (ip4Address) ? &ip4ToGive.addr : NULL,
                                             (ip4Prefix) ? (uint8_t) (*ip4Prefix) : 32,
                                             (ip4Alloc) ? (uint8_t) (*ip4Alloc) : 32,
+                                            (routedip6Address) ?  &ip6ToRoute.addr : NULL,
+                                            (routedip6Alloc) ? (uint8_t) (*routedip6Alloc) : 128,
                                             context->ipTun);
         sendResponse(conn, txid, context->admin);
         return;
@@ -126,15 +135,30 @@ static void connectTo(Dict* args, void* vcontext, String* txid, struct Allocator
     struct Context* context = vcontext;
     String* publicKeyOfNodeToConnectTo =
         Dict_getStringC(args, "publicKeyOfNodeToConnectTo");
+    String* routedip6Address = Dict_getStringC(args, "routedip6Address");
+    int64_t* routedip6Alloc = Dict_getIntC(args, "routedip6Alloc");
+
+    struct Sockaddr_storage ip6ToRoute;
 
     uint8_t pubKey[32];
     uint8_t ip6[16];
     int ret;
+
+     if (routedip6Address
+        && (Sockaddr_parse(routedip6Address->bytes, &ip6ToRoute)
+            || Sockaddr_getFamily(&ip6ToRoute.addr) != Sockaddr_AF_INET6))
+    {
+        sendError("malformed routedip6Address", txid, context->admin);
+        return;
+    }
+
     if ((ret = Key_parse(publicKeyOfNodeToConnectTo, pubKey, ip6)) != 0) {
         sendError(Key_parse_strerror(ret), txid, context->admin);
         return;
     }
-    int conn = IpTunnel_connectTo(pubKey, context->ipTun);
+    int conn = IpTunnel_connectTo(pubKey, context->ipTun,
+        (routedip6Address) ?  &ip6ToRoute.addr : NULL,
+        (routedip6Alloc) ? (uint8_t) (*routedip6Alloc) : 128);
     sendResponse(conn, txid, context->admin);
 }
 
@@ -237,11 +261,15 @@ void IpTunnel_admin_register(struct IpTunnel* ipTun, struct Admin* admin, struct
             { .name = "ip4Address", .required = 0, .type = "String" },
             { .name = "ip4Prefix", .required = 0, .type = "Int" },
             { .name = "ip4Alloc", .required = 0, .type = "Int" },
+            { .name = "routedip6Address", .required = 0, .type = "String" },
+            { .name = "routedip6Alloc", .required = 0, .type = "Int" },
         }), admin);
 
     Admin_registerFunction("IpTunnel_connectTo", connectTo, context, true,
         ((struct Admin_FunctionArg[]) {
-            { .name = "publicKeyOfNodeToConnectTo", .required = 1, .type = "String" }
+            { .name = "publicKeyOfNodeToConnectTo", .required = 1, .type = "String" },
+            { .name = "routedip6Address", .required = 0, .type = "String" },
+            { .name = "routedip6Alloc", .required = 0, .type = "Int" },
         }), admin);
 
     Admin_registerFunction("IpTunnel_removeConnection", removeConnection, context, true,
