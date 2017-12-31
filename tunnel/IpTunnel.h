@@ -41,13 +41,13 @@ struct IpTunnel_Connection
     uint8_t connectionIp4[4];
 
     /** The IPv6 netmask/prefix length, in bits. Defaults to 128 if none was assigned. */
-    uint8_t connectionIp6Alloc;
+    uint8_t connectionIp6Prefix;
 
     /** The IPv6 routed netmask/prefix length, in bits. Defaults to 128 if none was assigned. */
     uint8_t routedIp6Alloc;
 
     /** The IPv6 prefix length in, in bits, defining netmask. 0xff if not used. */
-    uint8_t connectionIp6Prefix;
+    uint8_t connectionIp6Alloc;
 
     /** The IPv4 address prefix length, in bits. Defaults to 32 if none was assigned. */
     uint8_t connectionIp4Prefix;
@@ -115,7 +115,7 @@ int IpTunnel_allowConnection(uint8_t publicKeyOfAuthorizedNode[32],
                              uint8_t ip6Prefix, uint8_t ip6Alloc,
                              struct Sockaddr* ip4Addr,
                              uint8_t ip4Prefix, uint8_t ip4Alloc,
-                            struct Sockaddr* routedip6Addr,
+                             struct Sockaddr* routedip6Addr,
                              uint8_t routedip4Alloc,
                              struct IpTunnel* tunnel);
 
@@ -126,9 +126,10 @@ int IpTunnel_allowConnection(uint8_t publicKeyOfAuthorizedNode[32],
  * @param tunnel the IpTunnel.
  * @return an connection number which is usable with IpTunnel_remove().
  */
-int IpTunnel_connectTo(uint8_t publicKeyOfNodeToConnectTo[32], struct IpTunnel* tunnel,
-                             struct Sockaddr* routedip6Addr,
-                             uint8_t routedip4Alloc);
+int IpTunnel_connectTo(uint8_t publicKeyOfNodeToConnectTo[32], 
+                       struct IpTunnel* tunnel,
+                       struct Sockaddr* routedip6Addr,
+                       uint8_t routedip4Alloc);
 
 /**
  * Disconnect from a node or remove authorization to connect.
