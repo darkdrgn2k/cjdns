@@ -116,7 +116,7 @@ int IpTunnel_allowConnection(uint8_t publicKeyOfAuthorizedNode[32],
                              struct Sockaddr* ip4Addr,
                              uint8_t ip4Prefix, uint8_t ip4Alloc,
                              struct Sockaddr* routedip6Addr,
-                             uint8_t routedip4Alloc,
+                             uint8_t routedip6Alloc,
                              struct IpTunnel* tunnel);
 
 /**
@@ -129,7 +129,7 @@ int IpTunnel_allowConnection(uint8_t publicKeyOfAuthorizedNode[32],
 int IpTunnel_connectTo(uint8_t publicKeyOfNodeToConnectTo[32], 
                        struct IpTunnel* tunnel,
                        struct Sockaddr* routedip6Addr,
-                       uint8_t routedip4Alloc);
+                       uint8_t routedip6Alloc);
 
 /**
  * Disconnect from a node or remove authorization to connect.
